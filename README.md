@@ -12,8 +12,8 @@ the simulator cannot prove.
 |---|---|---|---|---|
 | 01 | [esp32-isr-heartbeat](https://github.com/DwalloE/esp32-isr-heartbeat) | `volatile` via its own disassembly, torn 64-bit reads measured and fixed with a seqlock, ISR discipline with a field failure per rule | ESP32 · ESP-IDF | [browser](https://wokwi.com/projects/474713120227154945) · `make -C test` |
 | 02 | [spsc-ring-buffer-esp32](https://github.com/DwalloE/spsc-ring-buffer-esp32) | Lock-free SPSC ring from scratch (no FreeRTOS queue), fed by a raw UART RX ISR — ThreadSanitizer-certified with failure controls, 100% branch coverage gated in CI | ESP32 · ESP-IDF | [browser](https://wokwi.com/projects/474765822779725825) · `make -C test` |
-| 03 | bme280-driver-from-datasheet | An I2C driver from the register map with no vendor library: calibration arithmetic, every bus failure path tested, wire-level VCD traces | ESP32 · ESP-IDF | *next up* |
-| 04 | freertos-task-architecture | Four tasks, queues, stack high-water arithmetic, a linker-map analysis, priority inversion measured then fixed | ESP32 · FreeRTOS | *planned* |
+| 03 | [bme280-driver-from-datasheet](https://github.com/DwalloE/bme280-driver-from-datasheet) | An I2C driver from the register map with no vendor library: calibration arithmetic, every bus failure path fault-injected and coverage-gated, CI-captured wire-level VCD traces — plus its own simulated BME280, written from the same datasheet | ESP32 · ESP-IDF | `make -C test` |
+| 04 | freertos-task-architecture | Four tasks, queues, stack high-water arithmetic, a linker-map analysis, priority inversion measured then fixed | ESP32 · FreeRTOS | *next up* |
 | 05 | mqtt-store-and-forward | Telemetry over flaky connectivity with zero loss and zero duplicates, chaos-tested in CI | ESP32 · MQTT | *planned* |
 | 06 | stm32-baremetal-boot | My own startup.s, vector table, linker script, and clock tree — no HAL, no CMSIS | STM32F103 · bare metal | *planned* |
 | 07 | stm32-usart-driver | Interrupt-driven USART by register, with a wire-level failure gallery: framing, overrun, noise | STM32F103 · bare metal | *planned* |
