@@ -14,8 +14,8 @@ the simulator cannot prove.
 | 02 | [spsc-ring-buffer-esp32](https://github.com/DwalloE/spsc-ring-buffer-esp32) | Lock-free SPSC ring from scratch (no FreeRTOS queue), fed by a raw UART RX ISR — ThreadSanitizer-certified with failure controls, 100% branch coverage gated in CI | ESP32 · ESP-IDF | [browser](https://wokwi.com/projects/474765822779725825) · `make -C test` |
 | 03 | [bme280-driver-from-datasheet](https://github.com/DwalloE/bme280-driver-from-datasheet) | An I2C driver from the register map with no vendor library: calibration arithmetic, every bus failure path fault-injected and coverage-gated, CI-captured wire-level VCD traces — plus its own simulated BME280, written from the same datasheet | ESP32 · ESP-IDF | [browser](https://wokwi.com/projects/474771407250609153) · `make -C test` |
 | 04 | [freertos-task-architecture](https://github.com/DwalloE/freertos-task-architecture) | Four tasks with deliberate core affinity: firmware-asserted stack high-water margins, a linker-map analysis with a stack-vs-static experiment, priority inversion measured both ways (310 ms vs 40 ms), and a canary-caught overflow CI *requires* | ESP32 · FreeRTOS | [browser](https://wokwi.com/projects/474954927923025921) · `make -C test` |
-| 05 | mqtt-store-and-forward | Telemetry over flaky connectivity with zero loss and zero duplicates, chaos-tested in CI | ESP32 · MQTT | *next up* |
-| 06 | stm32-baremetal-boot | My own startup.s, vector table, linker script, and clock tree — no HAL, no CMSIS | STM32F103 · bare metal | *planned* |
+| 05 | [mqtt-store-and-forward](https://github.com/DwalloE/mqtt-store-and-forward) | Telemetry over deliberately broken connectivity with zero loss and zero duplicates: an NVS store-and-forward queue that survives reboot and torn writes, idempotent IDs, jittered backoff — a chaos suite (broker SIGKILL, mid-PUBLISH cuts, power cuts) asserts the subscriber's own verdict in CI | ESP32 · MQTT | `make -C test chaos` |
+| 06 | stm32-baremetal-boot | My own startup.s, vector table, linker script, and clock tree — no HAL, no CMSIS | STM32F103 · bare metal | *next up* |
 | 07 | stm32-usart-driver | Interrupt-driven USART by register, with a wire-level failure gallery: framing, overrun, noise | STM32F103 · bare metal | *planned* |
 | 08 | iot-power-budget-model | Measured phase timings + datasheet currents → defensible battery-life arithmetic, and what an ammeter gets wrong | ESP32 + Python | *planned* |
 | 09 | zephyr-nrf52840-sensor-node | Project 03's driver as a proper out-of-tree Zephyr module: devicetree binding, Kconfig, Twister + Renode tests | nRF52840 · Zephyr | *planned* |
@@ -34,7 +34,10 @@ Two habits worth noticing, because they are the actual product:
 - **Tests prove they can detect failure before claiming success.** Project 01 first shows
   the harness catching a torn read, then shows the seqlock preventing it; project 02 first
   makes ThreadSanitizer flag a barrier-stripped buffer and two abusive writers, then lets
-  the real one claim a clean run. A concurrency test without a control proves nothing.
+  the real one claim a clean run; project 05 runs one chaos pass with dedup disabled (the
+  duplicate must reach the consumer) and one boot with the CRC check stubbed (the torn
+  record must sail through) before trusting either green. A safety net that was never
+  proven able to fire is decoration.
 - **Honest limits are stated, not implied.** A simulator has no analog behaviour, measures
   no current, and x86 ThreadSanitizer certifies a memory-ordering discipline, not Xtensa
   silicon. Each README says exactly what its evidence covers and where bench work begins.
